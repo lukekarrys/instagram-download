@@ -1,0 +1,60 @@
+{
+  "name": "instagram-download",
+  "description": "Download Instagram JSON data and images.",
+  "version": "0.0.1",
+  "author": "Luke Karrys <luke@lukekarrys.com>",
+  "bin": {
+    "instagram-download": "./lib/cli.js"
+  },
+  "bugs": {
+    "url": "https://github.com/lukekarrys/instagram-download/issues"
+  },
+  "dependencies": {
+    "async": "^1.4.2",
+    "debug": "^2.2.0",
+    "instagram-node": "^0.5.8",
+    "lodash": "^3.10.1",
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "request": "^2.61.0"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-eslint": "^4.1.1",
+    "babel-tape-runner": "^1.2.0",
+    "precommit-hook": "^3.0.0",
+    "standard": "^5.2.2",
+    "tap-spec": "^4.1.0",
+    "tape": "^4.2.0"
+  },
+  "homepage": "https://github.com/lukekarrys/instagram-download#readme",
+  "keywords": [
+    "backup",
+    "download",
+    "intstagram"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "pre-commit": [
+    "lint",
+    "validate",
+    "test"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/lukekarrys/instagram-download.git"
+  },
+  "scripts": {
+    "compile": "rm -rf lib/ && babel src --out-dir lib",
+    "lint": "standard",
+    "prepublish": "npm run compile",
+    "test": "babel-tape-runner test/*.js | tap-spec",
+    "validate": "npm ls"
+  },
+  "standard": {
+    "ignore": [
+      "**/lib/**"
+    ],
+    "parser": "babel-eslint"
+  }
+}
