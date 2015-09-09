@@ -1,7 +1,7 @@
 {
   "name": "instagram-download",
   "description": "Download Instagram JSON data and images.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Luke Karrys <luke@lukekarrys.com>",
   "bin": {
     "instagram-download": "./lib/cli.js"
