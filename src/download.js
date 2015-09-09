@@ -5,7 +5,7 @@ import {queue, series} from 'async'
 import mkdirp from 'mkdirp'
 import partial from 'lodash/function/partial'
 import requiredOptions from './util/requiredOptions'
-import {saveImage, saveJson, fetchAndSave} from './util/saveFiles'
+import {saveMedia, saveJson, fetchAndSave} from './util/saveFiles'
 import {MAX_COUNT, QUEUE_CONCURRENCY, JSON_DIRNAME, MEDIA_DIRNAME} from './util/constants'
 import readIGData from './read'
 
@@ -47,10 +47,10 @@ export default (options, cb) => {
 
     const queueOptions = {ig, jsonDir, mediaDir, refresh, full}
     const jsonQueue = queue(saveJson(queueOptions), QUEUE_CONCURRENCY)
-    const imageQueue = queue(saveImage(queueOptions), QUEUE_CONCURRENCY)
+    const mediaQueue = queue(saveMedia(queueOptions), QUEUE_CONCURRENCY)
 
     // Fetch the first page of most recent media
     // The fetchAndSave callback will take care of iterating over each page
-    ig.user_media_recent(user, igOptions, fetchAndSave({jsonQueue, imageQueue}, cb))
+    ig.user_media_recent(user, igOptions, fetchAndSave({jsonQueue, mediaQueue}, cb))
   })
 }

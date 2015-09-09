@@ -1,7 +1,7 @@
 instagram-download
 ===================
 
-Download all the Instagram JSON data and images files for a user.
+Download all the Instagram JSON data and media for a user.
 
 [![NPM](https://nodei.co/npm/instagram-download.png)](https://nodei.co/npm/instagram-download/)
 [![Build Status](https://travis-ci.org/lukekarrys/instagram-download.png?branch=master)](https://travis-ci.org/lukekarrys/instagram-download)
@@ -88,7 +88,7 @@ By default the Instagram API only includes a few likes and comments with each po
 
 ## Debug Logging
 
-This module uses [`debug`](https://www.npmjs.org/debug) to selectively log events. By default nothing is logged, but you can use the `DEBUG` environment variable to enable logging. All debug logging events use the namespace prefix `instagram-download:` with the suffixes `cli`, `download`, `read`, `options`, `api`, `json`, `image`. Here are some examples:
+This module uses [`debug`](https://www.npmjs.org/debug) to selectively log events. By default nothing is logged, but you can use the `DEBUG` environment variable to enable logging. All debug logging events use the namespace prefix `instagram-download:` with the suffixes `cli`, `download`, `read`, `options`, `api`, `json`, `media`. Here are some examples:
 
 ```sh
 # Log everthing

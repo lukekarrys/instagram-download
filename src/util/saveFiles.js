@@ -9,7 +9,7 @@ import debug from './debug'
 
 const debugApi = debug('api')
 const debugJson = debug('json')
-const debugImage = debug('image')
+const debugMedia = debug('media')
 
 const shouldWrite = (debug, filepath, overwrite, yes, no) => {
   fs.exists(filepath, (exists) => {
@@ -49,15 +49,15 @@ export const saveJson = ({ig, jsonDir, refresh, full}) => (json, saveDone) => {
   }, saveDone)
 }
 
-export const saveImage = ({mediaDir}) => (url, saveDone) => {
-  // The Instagram images get saved to a location on disk that matches the
+export const saveMedia = ({mediaDir}) => (url, saveDone) => {
+  // The Instagram media files get saved to a location on disk that matches the
   // urls domain+path, so we need to make that directory and then save the file
   const stripped = url.replace(/^https?:\/\//, '/')
   const dirname = mediaDir(path.dirname(stripped))
   const filepath = path.join(dirname, path.basename(stripped))
-  // An Instagram image at a url should never change so we shouldn't ever
+  // An Instagram media at a url should never change so we shouldn't ever
   // need to download it more than once
-  shouldWrite(debugImage, filepath, false, () => {
+  shouldWrite(debugMedia, filepath, false, () => {
     mkdirp(dirname, (err) => {
       if (err) return saveDone(err)
       request(url).pipe(fs.createWriteStream(filepath)).on('close', saveDone)
@@ -65,18 +65,18 @@ export const saveImage = ({mediaDir}) => (url, saveDone) => {
   }, saveDone)
 }
 
-export const fetchAndSave = ({jsonQueue, imageQueue}, cb) => {
+export const fetchAndSave = ({jsonQueue, mediaQueue}, cb) => {
   let COUNT = 0
 
   // The callback passed to the function will be executed once
-  // both json and image queues have been drained
+  // both json and media queues have been drained
   const onDrain = after(2, cb)
   jsonQueue.drain = () => {
     debugJson('queue drain')
     onDrain()
   }
-  imageQueue.drain = () => {
-    debugImage('queue drain')
+  mediaQueue.drain = () => {
+    debugMedia('queue drain')
     onDrain()
   }
 
@@ -93,7 +93,8 @@ export const fetchAndSave = ({jsonQueue, imageQueue}, cb) => {
 
       medias.forEach((media) => {
         jsonQueue.push(media)
-        each(media.images, (img) => imageQueue.push(img.url))
+        each(media.images, (img) => mediaQueue.push(img.url))
+        each(media.videos, (video) => mediaQueue.push(video.url))
       })
     } else if (medias.length === 0 && COUNT === 0 && !pagination.next) {
       debugApi('No media')

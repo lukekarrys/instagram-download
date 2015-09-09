@@ -1,6 +1,6 @@
 {
   "name": "instagram-download",
-  "description": "Download Instagram JSON data and images.",
+  "description": "Download all the Instagram JSON data and media for a user.",
   "version": "1.0.0",
   "author": "Luke Karrys <luke@lukekarrys.com>",
   "bin": {
@@ -46,6 +46,7 @@
   },
   "scripts": {
     "compile": "rm -rf lib/ && babel src --out-dir lib",
+    "example": "DEBUG=instagram-download:* babel-node src/cli.js --user 1640745920 --dir _cache --refresh --full",
     "lint": "standard",
     "prepublish": "npm run compile",
     "test": "babel-tape-runner test/*.js | tap-spec",
