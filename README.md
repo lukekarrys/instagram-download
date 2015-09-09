@@ -83,7 +83,12 @@ By default running `instagram-download` again will start after the most recent I
 
 #### `full` (boolean, optional, default `false`)
 
-By default the Instagram API only includes a few likes and comments with each post. You have the option (at the expense of two extra API requests per post) to fetch as many likes and comments as Instagram allows (which right now is ~120 each). The extra API requests shouldn't be an issue since Instagram allows 5000 per hour.
+By default the Instagram API only includes a few likes and comments with each post. You have the option (at the expense of two extra API requests per post) to fetch as many likes and comments as Instagram allows (which right now is ~120 each). You shouldn't hit any rate limits when using this option unless you have more than `2462` posts. See the [API Rate Limiting](#api-rate-limiting) section below for more detailed info about this.
+
+
+## API Rate Limiting
+
+The Instagram API allows 5000 requests per hour and can fetch `33` posts per page. That means you should only run into rate limiting issues if you are using the `full` option **and** have over `2462` posts. If you do hit rate limit issues you should be able to wait an hour until the limit is reset and run the command again since `instagram-download` by default won't make API requests for posts that already exist in the output directory.
 
 
 ## Debug Logging
