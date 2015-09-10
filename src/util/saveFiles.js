@@ -2,16 +2,17 @@ import fs from 'fs'
 import path from 'path'
 import mkdirp from 'mkdirp'
 import after from 'lodash/function/after'
+import each from 'lodash/collection/each'
+import partial from 'lodash/function/partial'
 import {parallel} from 'async'
 import request from 'request'
-import each from 'lodash/collection/each'
 import debug from './debug'
 
 const debugApi = debug('api')
 const debugJson = debug('json')
 const debugMedia = debug('media')
 
-const shouldWrite = (debug, filepath, overwrite, yes, no) => {
+const shouldWrite = ({debug, filepath, overwrite}, no, yes) => {
   fs.exists(filepath, (exists) => {
     if (exists && !overwrite) {
       debug(`Exists, skipping ${filepath}`)
@@ -29,24 +30,37 @@ const shouldWrite = (debug, filepath, overwrite, yes, no) => {
 export const saveJson = ({ig, jsonDir, refresh, full}) => (json, saveDone) => {
   const id = json.id
   const filepath = jsonDir(`${id}.json`)
+
+  const writeIfNeeded = partial(shouldWrite, {debug: debugJson, filepath, overwrite: refresh}, saveDone)
   const writeFile = (data) => fs.writeFile(filepath, JSON.stringify(data), {encoding: 'utf8'}, saveDone)
-  shouldWrite(debugJson, filepath, refresh, () => {
+
+  const fetchForPost = (fetch) => (cb) => ig[fetch](id, (err, res, remaining) => {
+    debugApi(`API calls left ${remaining}`)
+    if (err) {
+      debugApi(`${fetch} API error ${err}`)
+      return cb(err)
+    }
+    debugJson(`${id} ${fetch} ${res.length}`)
+    cb(null, res)
+  })
+
+  writeIfNeeded(() => {
     if (full) {
       // Full means we fetch likes and comments separately and add those
       // to the json payload that gets saved
       parallel({
-        likes: (cb) => ig.likes(id, cb),
-        comments: (cb) => ig.comments(id, cb)
-      }, (err, res) => {
+        likes: fetchForPost('likes'),
+        comments: fetchForPost('comments')
+      }, (err, {likes, comments}) => {
         if (err) return saveDone(err)
-        json.likes.data = res.likes
-        json.comments.data = res.comments
+        json.likes.data = likes
+        json.comments.data = comments
         writeFile(json)
       })
     } else {
       writeFile(json)
     }
-  }, saveDone)
+  })
 }
 
 export const saveMedia = ({mediaDir}) => (url, saveDone) => {
@@ -55,14 +69,17 @@ export const saveMedia = ({mediaDir}) => (url, saveDone) => {
   const stripped = url.replace(/^https?:\/\//, '/')
   const dirname = mediaDir(path.dirname(stripped))
   const filepath = path.join(dirname, path.basename(stripped))
+
   // An Instagram media at a url should never change so we shouldn't ever
   // need to download it more than once
-  shouldWrite(debugMedia, filepath, false, () => {
+  const writeIfNeeded = partial(shouldWrite, {debug: debugMedia, filepath, overwrite: false}, saveDone)
+
+  writeIfNeeded(() => {
     mkdirp(dirname, (err) => {
       if (err) return saveDone(err)
       request(url).pipe(fs.createWriteStream(filepath)).on('close', saveDone)
     })
-  }, saveDone)
+  })
 }
 
 export const fetchAndSave = ({jsonQueue, mediaQueue}, cb) => {
@@ -103,5 +120,6 @@ export const fetchAndSave = ({jsonQueue, mediaQueue}, cb) => {
 
     pagination.next && pagination.next(fetchMedia)
   }
+
   return fetchMedia
 }
