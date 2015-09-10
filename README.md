@@ -88,7 +88,7 @@ By default the Instagram API only includes a few likes and comments with each po
 
 ## `media` and `json` directories
 
-Once everything is downloaded you'll see the following directories: `$DIR/$USER_ID/json` and `$DIR/$USER_ID/media`. The `json` directory will consist of an `INSTAGRAM_POST_ID.json` file for each Instagram post. The `media` directory will consist of all the media (images and videos) with a directory structure that mirrors that pathnames from where they are hosted by Instagram. This is done so that if you look inside an `INSTAGRAM_POST_ID.json` file, you can easily find the images files by replacing the url protocol with the `$DIR/$USER_ID/media` path prefix. Here's an example:
+Once everything is downloaded you'll see the following directories: `$DIR/$USER_ID/json` and `$DIR/$USER_ID/media`. The `json` directory will consist of an `INSTAGRAM_POST_ID.json` file for each Instagram post. The `media` directory will consist of all the media (images and videos) with a directory structure that mirrors that pathnames from where they are hosted by Instagram. This is done so that if you look inside an `INSTAGRAM_POST_ID.json` file, you can easily find the images files by prefixing the url host + path with the path to the media directory for that user: `$DIR/$USER_ID/media`. Here's an example:
 
 **_cache/1640745920/json/1002451038433600709_1640745920.json**
 ```json
@@ -102,16 +102,21 @@ Once everything is downloaded you'll see the following directories: `$DIR/$USER_
 }
 ```
 
-The standard_resolution image for that post will be located at `_cache/1640745920/media/scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e15/11312306_899995390069692_1338680988_n.jpg`. Here is some a hopefully cohrent script hopefully proving that point:
+The standard resolution image for that post will be located at `_cache/1640745920/media/scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e15/11312306_899995390069692_1338680988_n.jpg`. Here is some JS for how you'd go about getting that:
 
-```sh
-dir=_cache
-user=1640745920
-json=${dir}/${user}/json/1002451038433600709_1640745920.json
-media=${dir}/${user}/media/
-file=`cat ${json} | jq -r .images.standard_resolution.url | sed "s|https://|${media}|"`
-# Get the size of the image
-stat -c%s $file
+```js
+import {statSync} from 'fs'
+import {parse} from 'url'
+
+const BASE = '_cache/1640745920/'
+const JSON_DIR = 'json/'
+const MEDIA_DIR = 'media/'
+const POST_ID = '1002451038433600709_1640745920'
+
+const post = require(`./${BASE}${JSON_DIR}${POST_ID}`)
+const {host, path} = parse(post.images.standard_resolution.url)
+
+console.log(statSync(`${BASE}${MEDIA_DIR}${host}${path}`))
 ```
 
 
