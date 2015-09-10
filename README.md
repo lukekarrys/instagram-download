@@ -61,7 +61,7 @@ The id of the Instagram user that you want to download.
 
 #### `dir` (string, required)
 
-The directory where you want to download all the data. It will be created if it does not exist. Inside the directory it will create a structure so that multiple users can be downloaded:
+The directory where you want to download all the data. It will be created if it does not exist. Inside the directory it will create a structure so that multiple users can be downloaded. See the [`media` and `json` section below](#media-and-json-directories) about how the data is stored inside those directories.
 
 ```sh
 dir
@@ -84,6 +84,35 @@ By default running `instagram-download` again will start after the most recent I
 #### `full` (boolean, optional, default `false`)
 
 By default the Instagram API only includes a few likes and comments with each post. You have the option (at the expense of two extra API requests per post) to fetch as many likes and comments as Instagram allows (which right now is ~120 each). You shouldn't hit any rate limits when using this option unless you have more than `2462` posts. See the [API Rate Limiting](#api-rate-limiting) section below for more detailed info about this.
+
+
+## `media` and `json` directories
+
+Once everything is downloaded you'll see the following directories: `$DIR/$USER_ID/json` and `$DIR/$USER_ID/media`. The `json` directory will consist of an `INSTAGRAM_POST_ID.json` file for each Instagram post. The `media` directory will consist of all the media (images and videos) with a directory structure that mirrors that pathnames from where they are hosted by Instagram. This is done so that if you look inside an `INSTAGRAM_POST_ID.json` file, you can easily find the images files by replacing the url protocol with the `$DIR/$USER_ID/media` path prefix. Here's an example:
+
+**_cache/1640745920/json/1002451038433600709_1640745920.json**
+```json
+{
+  "id": "1002451038433600709_1640745920",
+  "images": {
+    "standard_resolution": {
+      "url": "https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e15/11312306_899995390069692_1338680988_n.jpg"
+    }
+  }
+}
+```
+
+The standard_resolution image for that post will be located at `_cache/1640745920/media/scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/e15/11312306_899995390069692_1338680988_n.jpg`. Here is some a hopefully cohrent script hopefully proving that point:
+
+```sh
+dir=_cache
+user=1640745920
+json=${dir}/${user}/json/1002451038433600709_1640745920.json
+media=${dir}/${user}/media/
+file=`cat ${json} | jq -r .images.standard_resolution.url | sed "s|https://|${media}|"`
+# Get the size of the image
+stat -c%s $file
+```
 
 
 ## API Rate Limiting
