@@ -99,15 +99,17 @@ export const fetchAndSave = ({jsonQueue, mediaQueue}, cb) => {
 
   const fetchMedia = (err, medias, pagination, remaining) => {
     debugApi(`API calls left ${remaining}`)
-    debugApi(`Has next page ${!!pagination.next}`)
 
     if (err) {
+      console.log(err.error_type)
+      if (err.error_type === 'APINotAllowedError') {
+        debugApi(`Its possible the user's account you are trying to download is private`)
+      }
       debugApi(`API error ${err}`)
     } else if (medias && medias.length) {
       COUNT += medias.length
       debugApi(`Fetched media ${medias.length}`)
       debugApi(`Fetched total ${COUNT}`)
-
       medias.forEach((media) => {
         jsonQueue.push(media)
         each(media.images, (img) => mediaQueue.push(img.url))
@@ -118,7 +120,10 @@ export const fetchAndSave = ({jsonQueue, mediaQueue}, cb) => {
       cb()
     }
 
-    pagination.next && pagination.next(fetchMedia)
+    if (pagination) {
+      debugApi(`Has next page ${!!pagination.next}`)
+      pagination.next && pagination.next(fetchMedia)
+    }
   }
 
   return fetchMedia
