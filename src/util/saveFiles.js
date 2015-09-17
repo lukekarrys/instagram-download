@@ -101,7 +101,6 @@ export const fetchAndSave = ({jsonQueue, mediaQueue}, cb) => {
     debugApi(`API calls left ${remaining}`)
 
     if (err) {
-      console.log(err.error_type)
       if (err.error_type === 'APINotAllowedError') {
         debugApi(`Its possible the user's account you are trying to download is private`)
       }
