@@ -3,16 +3,25 @@
 import minimist from 'minimist'
 import download from './download'
 import read from './read'
+import doctor from './doctor'
 
 const debug = require('./util/debug')('cli')
 const args = minimist(process.argv.slice(2), {
-  boolean: ['refresh', 'full', 'read'],
+  boolean: ['refresh', 'full', 'read', 'doctor'],
   string: ['dir', 'client', 'secret', 'user']
 })
 
 debug(args)
 
-if (args.read) {
+if (args.doctor) {
+  doctor(args, (err, result) => {
+    if (err) {
+      throw err
+    } else {
+      process.stdout.write(JSON.stringify(result, null, 2))
+    }
+  })
+} else if (args.read) {
   read(args, (err, result) => {
     if (err) {
       throw err

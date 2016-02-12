@@ -1,12 +1,11 @@
 import fs from 'fs'
-import path from 'path'
 import mkdirp from 'mkdirp'
-import after from 'lodash/function/after'
 import each from 'lodash/collection/each'
 import partial from 'lodash/function/partial'
 import {parallel} from 'async'
 import request from 'request'
 import debug from './debug'
+import urlToPath from './urlToPath'
 
 const debugApi = debug('api')
 const debugJson = debug('json')
@@ -66,9 +65,7 @@ export const saveJson = ({ig, jsonDir, refresh, full}) => (json, saveDone) => {
 export const saveMedia = ({mediaDir}) => (url, saveDone) => {
   // The Instagram media files get saved to a location on disk that matches the
   // urls domain+path, so we need to make that directory and then save the file
-  const stripped = url.replace(/^https?:\/\//, '/')
-  const dirname = mediaDir(path.dirname(stripped))
-  const filepath = path.join(dirname, path.basename(stripped))
+  const {filepath, dirname} = urlToPath({mediaDir, url})
 
   // An Instagram media at a url should never change so we shouldn't ever
   // need to download it more than once
@@ -76,8 +73,17 @@ export const saveMedia = ({mediaDir}) => (url, saveDone) => {
 
   writeIfNeeded(() => {
     mkdirp(dirname, (err) => {
-      if (err) return saveDone(err)
-      request(url).pipe(fs.createWriteStream(filepath)).on('close', saveDone)
+      if (err) {
+        debugMedia(`Error creating dir ${dirname}: ${err}`)
+        return saveDone(err)
+      }
+      request(url)
+      .on('error', (err) => {
+        debugMedia(`Error fetching media ${url}: ${err}`)
+        saveDone(err)
+      })
+      .pipe(fs.createWriteStream(filepath))
+      .on('close', saveDone)
     })
   })
 }
@@ -87,11 +93,17 @@ export const fetchAndSave = ({jsonQueue, mediaQueue}, cb) => {
 
   // The callback passed to the function will be executed once
   // both json and media queues have been drained
-  const onDrain = after(2, cb)
+  const onDrain = () => {
+    if (mediaQueue.running() === 0 && jsonQueue.running() === 0) {
+      cb()
+    }
+  }
+
   jsonQueue.drain = () => {
     debugJson('queue drain')
     onDrain()
   }
+
   mediaQueue.drain = () => {
     debugMedia('queue drain')
     onDrain()
