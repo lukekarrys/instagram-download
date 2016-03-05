@@ -1,9 +1,9 @@
 import fs from 'fs'
 import async from 'async'
 import path from 'path'
-import sortBy from 'lodash/collection/sortBy'
-import attempt from 'lodash/utility/attempt'
-import isError from 'lodash/lang/isError'
+import sortBy from 'lodash/sortBy'
+import attempt from 'lodash/attempt'
+import isError from 'lodash/isError'
 
 const isJSON = (filename) => path.extname(filename) === '.json'
 const readFile = (file, cb) => fs.readFile(file, {encoding: 'utf8'}, cb)

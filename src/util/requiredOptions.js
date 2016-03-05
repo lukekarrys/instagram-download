@@ -1,6 +1,6 @@
-import keys from 'lodash/object/keys'
-import some from 'lodash/collection/some'
-import includes from 'lodash/collection/includes'
+import keys from 'lodash/keys'
+import some from 'lodash/some'
+import includes from 'lodash/includes'
 
 const debug = require('./debug')('options')
 
