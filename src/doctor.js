@@ -1,12 +1,13 @@
-
 import fs from 'fs'
 import path from 'path'
-import read from './read'
 import {map as aMap, parallel} from 'async'
 import last from 'lodash/last'
 import partial from 'lodash/partial'
 import assign from 'lodash/assign'
 import transform from 'lodash/transform'
+import readDir from 'recursive-readdir'
+
+import read from './read'
 import requiredOptions from './util/requiredOptions'
 import {MEDIA_DIRNAME} from './util/constants'
 import urlToPath from './util/urlToPath'
@@ -43,7 +44,21 @@ export default (options, cb) => read(options, (err, data) => {
     parallel(assign(mediaToTask('images', item), mediaToTask('videos', item)), cb)
   }, (err, results) => {
     if (err) return cb(err)
-    stats.missing =
-    cb(null, assign({}, stats, ...results))
+
+    const hasMedia = transform(assign({}, ...results), (res, exists, key) => {
+      if (exists) res.media++
+      if (!exists) {
+        res.missing++
+        res.missingMedia.push(key)
+      }
+    }, {media: 0, missing: 0, missingMedia: []})
+
+    readDir(
+      mediaDir(),
+      (err, files) => {
+        if (err) return cb(err)
+        cb(null, assign({fileCount: files.length}, stats, hasMedia))
+      }
+    )
   })
 })

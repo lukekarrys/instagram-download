@@ -5,6 +5,7 @@ import partial from 'lodash/partial'
 import some from 'lodash/some'
 import reject from 'lodash/reject'
 import assign from 'lodash/assign'
+import once from 'lodash/once'
 import {parallel} from 'async'
 import request from 'request'
 import urlUtils from 'url'
@@ -76,27 +77,31 @@ export const saveJson = ({ig, jsonDir, refresh, full}) => (json, saveDone) => {
 }
 
 export const saveMedia = ({mediaDir}) => (url, saveDone) => {
+  // Make sure callback is always called once since we need both error and close events
+  // https://github.com/caolan/async/issues/614#issuecomment-55045730
+  const saveDoneOnce = once(saveDone)
+
   // The Instagram media files get saved to a location on disk that matches the
   // urls domain+path, so we need to make that directory and then save the file
   const {filepath, dirname} = urlToPath({mediaDir, url})
 
   // An Instagram media at a url should never change so we shouldn't ever
   // need to download it more than once
-  const writeIfNeeded = partial(shouldWrite, {debug: debugMedia, filepath, overwrite: false}, saveDone)
+  const writeIfNeeded = partial(shouldWrite, {debug: debugMedia, filepath, overwrite: false}, saveDoneOnce)
 
   writeIfNeeded(() => {
     mkdirp(dirname, (err) => {
       if (err) {
         debugMedia(`Error creating dir ${dirname}: ${err}`)
-        return saveDone(err)
+        return saveDoneOnce(err)
       }
       request(url)
       .on('error', (err) => {
         debugMedia(`Error fetching media ${url}: ${err}`)
-        saveDone(err)
+        saveDoneOnce(err)
       })
       .pipe(fs.createWriteStream(filepath))
-      .on('close', saveDone)
+      .on('close', saveDoneOnce)
     })
   })
 }

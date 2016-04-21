@@ -86,6 +86,11 @@ By default running `instagram-download` again will start after the most recent I
 By default the Instagram API only includes a few likes and comments with each post. You have the option (at the expense of two extra API requests per post) to fetch as many likes and comments as Instagram allows (which right now is ~120 each). You shouldn't hit any rate limits when using this option unless you have more than `2462` posts. See the [API Rate Limiting](#api-rate-limiting) section below for more detailed info about this.
 
 
+## `images` sizes
+
+The `images` hash in each json file will contain the following keys from Instagram `thumbnail`, `low_resolution`, and `standard_resolution`. The downloader will also [do some magic](https://github.com/lukekarrys/instagram-download/issues/3) to attempt to download the higher resolution versions (both cropped and uncropped) if possible, and those keys will be `high_resolution` and `high_resolution_cropped`.
+
+
 ## `media` and `json` directories
 
 Once everything is downloaded you'll see the following directories: `$DIR/$USER_ID/json` and `$DIR/$USER_ID/media`. The `json` directory will consist of an `INSTAGRAM_POST_ID.json` file for each Instagram post. The `media` directory will consist of all the media (images and videos) with a directory structure that mirrors that pathnames from where they are hosted by Instagram. This is done so that if you look inside an `INSTAGRAM_POST_ID.json` file, you can easily find the images files by prefixing the url host + path with the path to the media directory for that user: `$DIR/$USER_ID/media`. Here's an example:
