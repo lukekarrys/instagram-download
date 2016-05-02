@@ -142,7 +142,7 @@ export const fetchAndSave = ({jsonQueue, mediaQueue}, cb) => {
       medias.forEach((media) => {
         // Special stuff for https://github.com/lukekarrys/instagram-download/issues/3
         if (media.images) {
-          const {thumbnail, standard_resolution} = media.images
+          const {thumbnail, standard_resolution: standardResolution} = media.images
           if (thumbnail) {
             // high res uncropped
             // remove s150x150 and c0.134.1080.1080 from
@@ -153,8 +153,8 @@ export const fetchAndSave = ({jsonQueue, mediaQueue}, cb) => {
           // high res cropped
           // remove s640x640 from
           // t51.2885-15/s640x640/sh0.08/e35/12502019_964211777003492_661892888_n.jpg
-          if (standard_resolution) {
-            const highResCropped = stripUrlParts(standard_resolution.url, /^s\d+x\d+$/)
+          if (standardResolution) {
+            const highResCropped = stripUrlParts(standardResolution.url, /^s\d+x\d+$/)
             if (highResCropped) media.images.high_resolution_cropped = { url: highResCropped }
           }
         }
