@@ -7,6 +7,9 @@ Download all the Instagram JSON data and media for a user.
 [![Build Status](https://travis-ci.org/lukekarrys/instagram-download.png?branch=master)](https://travis-ci.org/lukekarrys/instagram-download)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
 
+## API Restrictions as of June 1, 2016
+
+**By default apps created for the Instagram API are in sandbox mode, and are only allowed to download the last 20 posts.**
 
 ## Install
 
@@ -20,10 +23,9 @@ You may want to use the `--global` option when installing if you want to use the
 ```js
 import download, {read} from 'instagram-download'
 
-// Download data for a user to a directory using an API client/secret
+// Download data for a user to a directory using an API access token
 download({
-  client,
-  secret,
+  token,
   user,
   dir,
   refresh: true,  // Optional
@@ -43,8 +45,8 @@ read({
 All the same options are available to the CLI.
 
 ```sh
-# Download data for a user to a directory using an API client/secret
-instagram-download --client=CLIENT --secret=SECRET --user=USER --dir=DIR [--refresh --full]
+# Download data for a user to a directory using an API token
+instagram-download --tooken=TOKEN --user=USER --dir=DIR [--refresh --full]
 
 # Read previously downloaded data for a user from a directory
 instagram-download --read --user=USER --dir=DIR
@@ -73,9 +75,11 @@ dir
     └── media
 ```
 
-#### `client`, `secret` (string, required for `download`)
+#### `token` (string, required for `download`)
 
-The client ID and secret of your Instagram client application. If you don't have one you'll need to [create one](https://instagram.com/developer/clients/manage/).
+An access token for the Instagram API from your client application. If you don't have one you'll need to [create an app](https://instagram.com/developer/clients/manage/) and then [get an access token](https://www.instagram.com/developer/authentication/).
+
+Note that as of June 1, 2016 API requests can no longer be made with using an application's client+secret (as this module did previously), and must use an access token.
 
 #### `refresh` (boolean, optional, default `false`)
 
@@ -127,7 +131,7 @@ console.log(statSync(`${BASE}${MEDIA_DIR}${host}${path}`))
 
 ## API Rate Limiting
 
-The Instagram API allows 5000 requests per hour and can fetch `33` posts per page. That means you should only run into rate limiting issues if you are using the `full` option **and** have over `2462` posts. If you do hit rate limit issues you should be able to wait an hour until the limit is reset and run the command again since `instagram-download` by default won't make API requests for posts that already exist in the output directory.
+This has changed as of June 1, 2016. See the new info in the [Instagram docs on rate limiting](https://www.instagram.com/developer/limits/).
 
 
 ## Debug Logging

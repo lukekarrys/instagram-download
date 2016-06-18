@@ -8,7 +8,7 @@ import doctor from './doctor'
 const debug = require('./util/debug')('cli')
 const args = minimist(process.argv.slice(2), {
   boolean: ['refresh', 'full', 'read', 'doctor'],
-  string: ['dir', 'client', 'secret', 'user']
+  string: ['dir', 'token', 'user']
 })
 
 debug(args)

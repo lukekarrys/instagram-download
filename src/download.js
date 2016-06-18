@@ -12,7 +12,7 @@ import readIGData from './read'
 const debug = require('./util/debug')('download')
 
 export default (options, cb) => {
-  const {dir, client, secret, user, refresh, full} = requiredOptions(options, ['dir', 'client', 'secret', 'user'])
+  const {dir, token, user, refresh, full} = requiredOptions(options, ['dir', 'token', 'user'])
 
   // Directories for saving files
   const userDir = partial(path.join, dir, user)
@@ -24,7 +24,7 @@ export default (options, cb) => {
 
   // Configure our instagram API instance
   const ig = instagram()
-  ig.use({client_id: client, client_secret: secret})
+  ig.use({access_token: token})
 
   // Make sure all our directories are created and
   // then start the instagram fetching
