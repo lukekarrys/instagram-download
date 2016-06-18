@@ -46,7 +46,7 @@ All the same options are available to the CLI.
 
 ```sh
 # Download data for a user to a directory using an API token
-instagram-download --tooken=TOKEN --user=USER --dir=DIR [--refresh --full]
+instagram-download --token=TOKEN --user=USER --dir=DIR [--refresh --full]
 
 # Read previously downloaded data for a user from a directory
 instagram-download --read --user=USER --dir=DIR
@@ -133,21 +133,15 @@ console.log(statSync(`${BASE}${MEDIA_DIR}${host}${path}`))
 Since the Instagram API now requires an access token for all requests, this module has a method for getting one.
 
 1. Create an [Instagram client application](https://instagram.com/developer/clients/manage/). You should be able to set any options you want, but you should add a "Valid Redirect URI" (under the Security tab) for `http://localhost:3003`.
-
 ![uri screenshot](https://cldup.com/eMdMhh3L6L.png)
-
 2. Once you've created your application you should be able to get the client ID and secret. It should look something like this:
-
 ![client screenshot](https://cldup.com/iBc4vAbLcc.png)
-
 3. Run this command using your client ID and secret. This will open a browser window and prompt you to login to Instagrama and approve your application to access your account. By default the access token will have a scope for `basic` and `public_content`. See the Instagram API docs for [other possible scopes](https://www.instagram.com/developer/authorization/).
-
 ```sh
 instagram-download --get_token --client=ID --secret=SECRET
 # Or to request other scopes
 instagram-download --get_token --client=ID --secret=SECRET --scope=basic --scope=likes --scope=comments
 ```
-
 4. The access token will be printed to the CLI and opened browser window once authorization is complete.
 
 
