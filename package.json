@@ -58,7 +58,7 @@
   "scripts": {
     "cli": "DEBUG=instagram-download:* babel-node src/cli.js",
     "compile": "rm -rf lib/ && babel src --out-dir lib",
-    "example": "DEBUG=instagram-download:* babel-node src/cli.js --user 2918900465 --dir _cache --refresh --full",
+    "example": "DEBUG=instagram-download:* babel-node src/cli.js --user 1640745920 --dir _cache --refresh --full",
     "lint": "standard",
     "prepublish": "npm run compile",
     "test": "babel-tape-runner test/*.js | tap-spec",
