@@ -53,7 +53,6 @@ export const saveJson = ({ig, jsonDir, refresh, full}) => (json, saveDone) => {
       debugApi(`${fetch} API error ${err}`)
       return cb(err)
     }
-    debugJson(`${id} ${fetch} ${res.length}`)
     cb(null, res)
   })
 
@@ -68,6 +67,8 @@ export const saveJson = ({ig, jsonDir, refresh, full}) => (json, saveDone) => {
         if (err) return saveDone(err)
         json.likes.data = likes
         json.comments.data = comments
+        debugJson(`${id} likes count:${json.likes.count} data:${likes.length}`)
+        debugJson(`${id} comments count:${json.comments.count} data:${comments.length}`)
         writeFile(json)
       })
     } else {
