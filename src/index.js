@@ -3,7 +3,7 @@ import read from './read'
 import doctor from './doctor'
 import token from './token'
 
-export {read as read}
-export {doctor as doctor}
-export {token as token}
+export {read}
+export {doctor}
+export {token}
 export default download
