@@ -133,6 +133,8 @@ export const fetchAndSave = ({jsonQueue, mediaQueue}, cb) => {
 
     if (err) {
       debugApi(`API error ${err}`)
+      debugApi(err)
+      debugApi(err.body)
       if (err.error_type === 'APINotAllowedError' || err.error_type === 'APINotFoundError') {
         debugApi('Its possible the user\'s account you are trying to download is private')
         debugApi('If you are running your Instagram client in Sandbox mode, make sure the user is added as a Sandbox user')
