@@ -9,7 +9,7 @@ Download all the Instagram JSON data and media for a user.
 
 ## API Restrictions as of June 1, 2016
 
-**By default apps created for the Instagram API are in sandbox mode, and are only allowed to download the last 20 posts.**
+**By default apps created for the Instagram API are in sandbox mode, and are only allowed to download the last 20 posts. They can also only access your user account and up to 9 other user accounts that accept your application request.**
 
 ## Install
 
