@@ -26,11 +26,11 @@ const stripUrlParts = (url, ...rejects) => {
 }
 
 const shouldWrite = ({debug, filepath, overwrite}, no, yes) => {
-  fs.exists(filepath, (exists) => {
-    if (exists && !overwrite) {
+  fs.access(filepath, (err) => {
+    if (!err && !overwrite) {
       debug(`Exists, skipping ${filepath}`)
       no()
-    } else if (exists && overwrite) {
+    } else if (!err && overwrite) {
       debug(`Exists, overwriting ${filepath}`)
       yes()
     } else {
