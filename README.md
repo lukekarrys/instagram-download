@@ -1,6 +1,8 @@
 instagram-download
 ===================
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/lukekarrys/instagram-download.svg)](https://greenkeeper.io/)
+
 Download all the Instagram JSON data and media for a user.
 
 [![NPM](https://nodei.co/npm/instagram-download.png)](https://nodei.co/npm/instagram-download/)
