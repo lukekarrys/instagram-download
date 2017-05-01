@@ -6,6 +6,7 @@ Download all the Instagram JSON data and media for a user.
 [![NPM](https://nodei.co/npm/instagram-download.png)](https://nodei.co/npm/instagram-download/)
 [![Build Status](https://travis-ci.org/lukekarrys/instagram-download.png?branch=master)](https://travis-ci.org/lukekarrys/instagram-download)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
+[![Greenkeeper badge](https://badges.greenkeeper.io/lukekarrys/instagram-download.svg)](https://greenkeeper.io/)
 
 ## API Restrictions as of June 1, 2016
 
